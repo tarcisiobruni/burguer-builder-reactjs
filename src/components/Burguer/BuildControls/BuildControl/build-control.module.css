@@ -5,7 +5,7 @@
     align-items: center;
     margin: 5px 0
 }
-.BuildControl{
+.BuildControl button{
     display: block;
     font: inherit;
     padding: 5px;
