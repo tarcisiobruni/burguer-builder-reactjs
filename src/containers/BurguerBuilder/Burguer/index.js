@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Auxiliary from '../../../hoc/Auxiliary'
 import Burguer from '../../../components/Burguer'
 import BuildControls from '../../../components/Burguer/BuildControls'
+import Modal from '../../../components/UI/Modal'
+import OrderSummary from '../../../components/Burguer/OrderSummary'
 
 const INGREDIENT_PRICES = {
     salad: 0.5,
@@ -21,8 +23,24 @@ export default class BurguerBuilder extends Component {
                 meat: 0,
                 cheese: 0
             },
-            totalPrice: 4
+            totalPrice: 4,
+            purchasable: false,
+            purchasing: false
         }
+    }
+
+    purchaseHandler = () => {
+        this.setState({purchasing: true})
+    }
+
+    updatePurchaseState(updatedIngredient) {
+        const ingredients = updatedIngredient
+        const sum = Object.keys(ingredients)
+            .map(igKey => {
+                return ingredients[igKey]
+            })
+            .reduce((sum, el) => { return sum + el }, 0);
+        this.setState({ purchasable: sum > 0 })
     }
 
     addIngredienthandler = (type) => {
@@ -35,12 +53,13 @@ export default class BurguerBuilder extends Component {
         const priceAddition = INGREDIENT_PRICES[type]
         const oldPrice = this.state.totalPrice;
         const newPrice = oldPrice + priceAddition
-        this.setState({totalPrice:newPrice, ingredients:updatedIngredient})
+        this.setState({ totalPrice: newPrice, ingredients: updatedIngredient })
+        this.updatePurchaseState(updatedIngredient);
     }
 
     removeIngredientHandler = (type) => {
         const oldCount = this.state.ingredients[type]
-        if(oldCount <= 0){
+        if (oldCount <= 0) {
             return;
         }
         const updatedCounted = oldCount - 1;
@@ -51,25 +70,29 @@ export default class BurguerBuilder extends Component {
         const priceDeduction = INGREDIENT_PRICES[type]
         const oldPrice = this.state.totalPrice;
         const newPrice = oldPrice - priceDeduction
-        this.setState({totalPrice:newPrice, ingredients:updatedIngredient})
+        this.setState({ totalPrice: newPrice, ingredients: updatedIngredient })
+        this.updatePurchaseState(updatedIngredient);
     }
 
     render() {
         const disableInfo = {
             ...this.state.ingredients
         }
-        for(let key in disableInfo) {
-            disableInfo[key] = disableInfo[key] <= 0 
+        for (let key in disableInfo) {
+            disableInfo[key] = disableInfo[key] <= 0
         }
         return (
             <Auxiliary>
+                <Modal show={this.state.purchasing}><OrderSummary ingredients={this.state.ingredients}/></Modal>
                 <Burguer ingredients={this.state.ingredients} />
                 <BuildControls
                     ingredientAdded={this.addIngredienthandler}
                     ingredientRemoved={this.removeIngredientHandler}
                     disabled={disableInfo}
                     price={this.state.totalPrice}
-                    />
+                    ordered={this.purchaseHandler}
+                    purchasable={this.state.purchasable}
+                />
             </Auxiliary>
         )
     }

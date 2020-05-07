@@ -10,7 +10,7 @@ const controls = [
 ]
 
 export default function BuildControls(props) {
-    const {ingredientAdded, ingredientRemoved, price,disabled} = props;
+    const {ingredientAdded, ordered, ingredientRemoved, price,disabled, purchasable} = props;
     return (
         <div className={styles.BuildControls}>
             <p>Current Price: R$ <strong>{price.toFixed(2)}</strong></p>
@@ -24,6 +24,7 @@ export default function BuildControls(props) {
                     label={ctrl.label} />
                 ))
             }
+            <button onClick={ordered} disabled={!purchasable} className={styles.OrderButton}>ORDER NOW</button>
         </div>
     )
 }
