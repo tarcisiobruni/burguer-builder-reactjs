@@ -36,6 +36,10 @@ export default class BurguerBuilder extends Component {
     this.setState({ purchasing: false });
   };
 
+  purchaseContinueHandler = () => {
+    alert('You continue');
+  };
+
   updatePurchaseState(updatedIngredient) {
     const ingredients = updatedIngredient;
     const sum = Object.keys(ingredients)
@@ -89,7 +93,12 @@ export default class BurguerBuilder extends Component {
     return (
       <Auxiliary>
         <Modal show={this.state.purchasing} modalClosed={this.purchaseCancelHandler}>
-          <OrderSummary ingredients={this.state.ingredients} />
+          <OrderSummary
+            price={this.state.totalPrice}
+            ingredients={this.state.ingredients}
+            purchaseCancelled={this.purchaseCancelHandler}
+            purchasedContinued={this.purchaseContinueHandler}
+          />
         </Modal>
         <Burguer ingredients={this.state.ingredients} />
         <BuildControls
